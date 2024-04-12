@@ -1,0 +1,4 @@
+#TODO Deployment (container port 8080; protocol TCP; replicas 2)
+
+---
+#TODO Service (port 80, target port 8080, TCP, type LoadBalancer)

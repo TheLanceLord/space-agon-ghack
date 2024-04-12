@@ -1,0 +1,72 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: director
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      run: director
+  template:
+    metadata:
+      labels:
+        run: director
+    spec:
+      containers:
+      - image: us-central1-docker.pkg.dev/qwiklabs-gcp-01-dae9145d7029/space-agon/space-agon-director:e189bf1
+        imagePullPolicy: Always
+        name: director
+      serviceAccount: fleet-allocator
+
+---
+
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  labels:
+    app: fleet-allocator
+  name: fleet-allocator
+
+---
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  labels:
+    app: fleet-allocator
+  name: fleet-allocator
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - events
+  verbs:
+  - create
+- apiGroups:
+  - allocation.agones.dev
+  resources:
+  - gameserverallocations
+  verbs:
+  - create
+- apiGroups:
+  - agones.dev
+  resources:
+  - fleets
+  verbs:
+  - get
+
+---
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  labels:
+    app: fleet-allocator
+  name: fleet-allocator
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: fleet-allocator
+subjects:
+- kind: ServiceAccount
+  name: fleet-allocator

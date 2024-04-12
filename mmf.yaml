@@ -1,0 +1,4 @@
+#TODO Deployment (replicas 2; container port 50502; protocol TCP; image pull policy Always)
+
+---
+#TODO Service (port 50502; protocol TCP)
